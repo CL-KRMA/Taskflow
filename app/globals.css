@@ -435,3 +435,20 @@ body {
     margin: 0.3rem 0;
   }
 }
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column; /* empile les éléments */
+    align-items: flex-start;
+  }
+
+  .nav-center {
+    flex-direction: column;
+    gap: 0.1rem;
+    width: 100%;
+  }
+
+  .nav-right {
+    margin-top: 0.1rem;
+  }
+}
