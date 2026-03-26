@@ -1,26 +1,437 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@plugin "daisyui" {
+  themes: all;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+.navbar {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between; /* sépare centre et droite */
+  align-items: center;
+  background: linear-gradient(90deg, #4a90e2, #007aff);
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.nav-center {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex: 1; /* occupe l’espace disponible pour rester centré */
+}
+
+.nav-right {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.navbar a:hover {
+  color: #ffdd57;
+}
+
+.navbar a::after {
+  content: '';
+  display: block;
+  height: 2px;
+  width: 0;
+  background: #ffdd57;
+  transition: width 0.3s ease;
+  margin: auto;
+}
+
+.navbar a:hover::after {
+  width: 100%;
+}
+
+/* Style pour le menu central */
+.nav-center a {
+  color: #ffffff;              /* texte blanc */
+  text-decoration: none;       /* pas de soulignement */
+  font-weight: 500;
+  font-size: 1.1rem;
+  padding: 0.5rem 1rem;        /* espace autour du texte */
+  border-radius: 4px;          /* coins légèrement arrondis */
+  transition: all 0.3s ease;   /* animation fluide */
+  position: relative;
+}
+
+/* Effet au survol */
+.nav-center a:hover {
+  background-color: rgba(255, 221, 87, 0.2); /* fond jaune transparent */
+  color: #ffdd57;                            /* texte jaune */
+}
+
+/* Soulignement animé */
+.nav-center a::after {
+  content: '';
+  display: block;
+  height: 2px;
+  width: 0;
+  background: #ffdd57;
+  transition: width 0.3s ease;
+  margin: auto;
+}
+
+.nav-center a:hover::after {
+  width: 100%;
+}
+
+/* Footer */
+.footer {
+  background: #1c1c1e;
+  color: #f5f5f7;
+  text-align: center;
+  padding: 1.5rem;
+  margin-top: 3rem;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+}
+
+.footer p {
+  color: #f5f5f7;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.footer a {
+  color: #4a90e2;
+  text-decoration: none;
+  margin: 0 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.footer a:hover {
+  color: #ffdd57;
+}
+
+/* Icônes sociales */
+.footer .socials {
+  margin-top: 1rem;
+}
+
+.footer .socials a {
+  display: inline-block;
+  margin: 0 0.5rem;
+  font-size: 1.2rem;
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
   }
 }
 
+/* ================================
+   🌐 Style global
+   ================================ */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ================================
+   📌 Navbar
+   ================================ */
+.navbar {
+  background: #111827; /* fond sombre */
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar a {
+  color: #d1d5db; /* gris clair */
+  margin-left: 1rem;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.navbar a:hover {
+  color: #60a5fa; /* bleu clair au hover */
+}
+
+/* Responsive navbar */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .navbar a {
+    margin: 0.5rem 0;
+  }
+}
+
+/* ================================
+   🏠 Section principale (Home)
+   ================================ */
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+  text-align: center;
+  color: white;
+}
+
+.home h1 {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.home p {
+  max-width: 600px;
+  margin: 1rem 0;
+  font-size: 1.2rem;
+  background-color: white;
+}
+
+.home a {
+  background: white;
+  color: #2563eb;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.home a:hover {
+  background: #e5e7eb;
+}
+
+/* Animation du gradient pour effet moderne */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.home {
+  background-size: 200% 200%;
+  animation: gradientMove 8s ease infinite;
+}
+
+/* ================================
+   📂 Cartes projets
+   ================================ */
+.project-card {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin: 1rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+}
+
+.project-card h3, p {
+  margin-bottom: 0.5rem;
+  color: #111827;
+}
+
+.project-card a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.project-card a:hover {
+  text-decoration: underline;
+}
+
+.project-links {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.project-links a {
+  background: #111827;
+  color: #60a5fa;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.3s, color 0.3s;
+}
+
+.project-links a:hover {
+  background: #1f2937;
+  color: #93c5fd;
+}
+
+
+/* ================================
+   📧 Formulaire contact
+   ================================ */
+.contact form {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: auto;
+}
+
+.contact input,
+.contact textarea {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.contact button {
+  background: #2563eb;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.contact button:hover {
+  background: #1d4ed8;
+}
+
+/* ================================
+   💡 Section compétences (Skills)
+   ================================ */
+.skills-section {
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.skills-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.skill-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.skill-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+}
+
+.skill-card h3 {
+  color: #2563eb;
+  margin-bottom: 1rem;
+}
+
+.skill-card li {
+  text-align: left;
+  margin: 0.5rem 0;
+  color: #374151;
+}
+
+/* Icônes des compétences */
+.skill-logo {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* ================================
+   👤 Section À propos
+   ================================ */
+.about-section {
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #f9fafb, #ffffff);
+  text-align: center;
+  max-width: 900px;
+  margin: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.about-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2563eb;
+  margin-bottom: 1.5rem;
+}
+
+.about-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.about-text strong {
+  font-weight: bold;
+  color: #111827; /* noir/gris foncé pour cohérence */
+}
+
+/* ================================
+   👤 Footer
+   ================================ */
+
+.footer {
+  background: #111827; /* cohérent avec la navbar */
+  color: #d1d5db;
+  text-align: center;
+  padding: 1rem;
+  margin-top: 2rem;
+}
+
+.footer-links {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: #60a5fa;
+  margin: 0 0.5rem;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover {
+  color: #93c5fd;
+}
+
+/* ✅ Responsive : liens en colonne sur mobile */
+@media (max-width: 600px) {
+  .footer-links {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footer-links a {
+    margin: 0.3rem 0;
+  }
 }
