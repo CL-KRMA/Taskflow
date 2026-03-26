@@ -9,7 +9,7 @@ export default function Home() {
       <p>
         <strong>Développeur Fullstack</strong> passionné par la création de solutions 
         digitales modernes. Mon objectif: <em>transformer vos idées en expériences 
-        web performantes et évolutives</em>.cool
+        web performantes et évolutives</em>.
       </p>
     </div>             
         <Footer />
