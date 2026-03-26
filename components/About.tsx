@@ -5,7 +5,7 @@ export default function About() {
       <h2 className="about-title">👋 À propos de moi</h2>
       <p className="about-text">
         Je suis <strong>Développeur Fullstack</strong> spécialisé dans l’écosystème 
-        <strong> JavaScript (React, Node.js)</strong> et <strong>WordPress</strong>. 
+        <strong> JavaScript (React, Node.js, Nextjs)</strong> et <strong>WordPress</strong>. 
         J’accompagne les entreprises dans la création et le déploiement 
         d’applications robustes, sécurisées et performantes.
       </p>
