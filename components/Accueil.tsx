@@ -3,7 +3,7 @@ import React from 'react'
 const Accueil = () => {
   return (
     <div className='home'>
-        <h1>Developpez votre créativité</h1>
+        <h1>Soyez imaginatifs</h1>
         <p>
             Bienvenue sur notre espace visuel, un lieu où chaque image raconte une histoire.<br />
             Ici, vous découvrirez une galerie dynamique qui met en valeur des moments, des paysages et des créations uniques.<br />
