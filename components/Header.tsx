@@ -5,17 +5,14 @@ export default function Header() {
         <nav className="navbar">
         <div className="nav-center">
           <Link href="/">Accueil</Link>
-          <Link href="/about">À propos</Link>
-          <Link href="/skills">Compétences</Link>
-          <Link href="/projects">Projets</Link>
+          <Link href="/liste">Liste D'images</Link>
+          <Link href="/ajouter">Ajouter</Link>
           <Link href="/contact">Contact</Link>
         </div>
-        {/*
         <div className="nav-right">
           <Link href="#">Inscription</Link>
           <Link href="#">Connexion</Link>
         </div>
-        */}
       </nav>
     </div>
 }
