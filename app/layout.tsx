@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,7 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Galerie en ligne"
+  title: "TaskFlow - Gestion de Projets",
+  description: "Application SaaS de gestion de tâches et projets",
 };
 
 export default function RootLayout({
@@ -22,11 +25,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en" data-theme="dracula"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="fr">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{ backgroundColor: '#f9fafb' }}
+      >
+        <Navbar />
+        <main style={{ minHeight: '100vh' }}>
+          {children}
+        </main>
+        <Footer />
+      </body>
     </html>
   );
 }
