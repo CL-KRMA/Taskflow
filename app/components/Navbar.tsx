@@ -1,10 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/useAuth';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, profile, signOut } = useAuth();
 
   const isActive = (path: string) => pathname === path;
 
@@ -13,13 +16,28 @@ export default function Navbar() {
     color: isActiveLink ? '#ffdd57' : '#fff',
   });
 
+  const displayName = profile?.first_name && profile?.last_name 
+    ? `${profile.first_name} ${profile.last_name}` 
+    : user?.email?.split('@')[0] || 'Utilisateur';
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.push('/');
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="nav-center">
-        <Link href="/" style={linkStyle(isActive('/'))}>
-          TaskFlow
-        </Link>
-        {pathname !== '/' && pathname !== '/login' && (
+        {!user && (
+          <Link href="/" style={linkStyle(isActive('/'))}>
+            TaskFlow
+          </Link>
+        )}
+        {user && (
           <>
             <Link href="/dashboard" style={linkStyle(isActive('/dashboard'))}>
               Tableau de bord
@@ -31,14 +49,30 @@ export default function Navbar() {
         )}
       </div>
       <div className="nav-right">
-        {pathname === '/login' || pathname === '/' ? (
-          <Link href="/login" className="btn btn-sm btn-warning">
-            Connexion
-          </Link>
+        {user ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: '#fff' }}>
+            <span style={{ fontSize: '0.875rem' }}>{displayName}</span>
+            <button 
+              onClick={handleLogout}
+              className="btn btn-sm btn-error"
+              style={{ backgroundColor: '#dc2626', borderColor: '#dc2626' }}
+            >
+              Déconnexion
+            </button>
+          </div>
         ) : (
-          <Link href="/" className="btn btn-sm btn-outline">
-            Déconnexion
-          </Link>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            {pathname !== '/login' && (
+              <Link href="/login" className="btn btn-sm btn-warning">
+                Connexion
+              </Link>
+            )}
+            {pathname !== '/register' && (
+              <Link href="/register" className="btn btn-sm btn-primary">
+                S'inscrire
+              </Link>
+            )}
+          </div>
         )}
       </div>
     </nav>

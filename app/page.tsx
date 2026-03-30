@@ -1,8 +1,20 @@
 'use client';
 
 import Link from 'next/link';
+import { useAuth } from '@/lib/useAuth';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function Home() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user && !loading) {
+      router.push('/dashboard');
+    }
+  }, [user, loading, router]);
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -54,7 +66,7 @@ export default function Home() {
         </div>
 
         <Link 
-          href="/login" 
+          href={user ? '/dashboard' : '/login'} 
           className="btn btn-lg btn-primary"
           style={{
             display: 'inline-flex',
@@ -63,7 +75,7 @@ export default function Home() {
             marginBottom: '2rem'
           }}
         >
-          Commencer →
+          {user ? 'Aller au tableau de bord →' : 'Commencer →'}
         </Link>
 
         <p style={{

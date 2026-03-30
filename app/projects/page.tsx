@@ -1,67 +1,102 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/useAuth';
+import { getProjectsWithTaskCounts, createProject, deleteProject, handleSupabaseError } from '@/lib/supabase-utils';
 
 interface Project {
-  id: number;
+  id: string;
   name: string;
   description: string;
-  tasks: number;
-  completed: number;
-  color: string;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+  taskCount?: number;
+  completedCount?: number;
 }
 
 export default function Projects() {
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: 1,
-      name: 'Refonte du site web',
-      description: 'Redesign complet du site corporate avec nouveau design system',
-      tasks: 8,
-      completed: 5,
-      color: 'from-blue-400 to-blue-600',
-    },
-    {
-      id: 2,
-      name: 'Application mobile',
-      description: 'Développement d\'une application iOS/Android pour nos clients',
-      tasks: 15,
-      completed: 7,
-      color: 'from-purple-400 to-purple-600',
-    },
-    {
-      id: 3,
-      name: 'Migration base de données',
-      description: 'Migration de PostgreSQL vers MongoDB pour améliorer la scalabilité',
-      tasks: 6,
-      completed: 4,
-      color: 'from-green-400 to-green-600',
-    },
-  ]);
-
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [projects, setProjects] = useState<Project[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectDesc, setNewProjectDesc] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleCreateProject = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  // Charger les projets
+  useEffect(() => {
+    const loadProjects = async () => {
+      if (!user) return;
+      try {
+        setIsLoading(true);
+        setError(null);
+        const projectsData = await getProjectsWithTaskCounts(user.id);
+        setProjects(projectsData);
+      } catch (err) {
+        setError(handleSupabaseError(err));
+        console.error('Erreur lors du chargement des projets:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProjects();
+  }, [user]);
+
+  const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newProjectName.trim()) {
-      const newProject: Project = {
-        id: projects.length + 1,
-        name: newProjectName,
-        description: newProjectDesc,
-        tasks: 0,
-        completed: 0,
-        color: 'from-indigo-400 to-indigo-600',
-      };
-      setProjects([...projects, newProject]);
+    if (!newProjectName.trim() || !user) return;
+
+    try {
+      const newProject = await createProject(user.id, newProjectName, newProjectDesc);
+      setProjects([
+        {
+          ...newProject,
+          taskCount: 0,
+          completedCount: 0,
+        },
+        ...projects,
+      ]);
       setNewProjectName('');
       setNewProjectDesc('');
       setShowForm(false);
-      alert('Projet créé avec succès!');
+    } catch (err) {
+      setError(handleSupabaseError(err));
     }
   };
+
+  const handleDeleteProject = async (projectId: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) return;
+
+    try {
+      await deleteProject(projectId);
+      setProjects(projects.filter(p => p.id !== projectId));
+    } catch (err) {
+      setError(handleSupabaseError(err));
+    }
+  };
+
+  if (loading || isLoading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ fontSize: '1.125rem', color: '#6b7280' }}>Chargement...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb', padding: '3rem 1rem' }}>
@@ -77,6 +112,19 @@ export default function Projects() {
             + Créer un projet
           </button>
         </div>
+
+        {error && (
+          <div style={{
+            backgroundColor: '#fee2e2',
+            color: '#991b1b',
+            padding: '1rem',
+            borderRadius: '0.5rem',
+            marginBottom: '1.5rem',
+            border: '1px solid #fca5a5'
+          }}>
+            {error}
+          </div>
+        )}
 
         {/* Formulaire Création Projet */}
         {showForm && (
@@ -133,46 +181,52 @@ export default function Projects() {
           gap: '1.5rem'
         }}>
           {projects.map((project) => (
-            <Link key={project.id} href={`/projects/${project.id}`} style={{ textDecoration: 'none' }}>
-              <div className="card" style={{ transition: 'all 0.3s ease', height: '100%', cursor: 'pointer' }}>
-                <div style={{
-                  height: '8rem',
-                  background: `linear-gradient(90deg, ${project.color === 'from-blue-400 to-blue-600' ? '#60a5fa, #2563eb' : project.color === 'from-purple-400 to-purple-600' ? '#a78bfa, #7c3aed' : project.color === 'from-green-400 to-green-600' ? '#4ade80, #16a34a' : '#818cf8, #4f46e5'})`
-                }} />
-                <div className="card-body">
-                  <h2 className="card-title" style={{ fontSize: '1.125rem', color: '#1f2937' }}>
+            <div key={project.id} className="card" style={{ transition: 'all 0.3s ease', height: '100%' }}>
+              <div style={{
+                height: '8rem',
+                background: 'linear-gradient(90deg, #4f46e5, #7c3aed)'
+              }} />
+              <div className="card-body">
+                <Link href={`/projects/${project.id}`}>
+                  <h2 className="card-title" style={{ fontSize: '1.125rem', color: '#1f2937', cursor: 'pointer' }}>
                     {project.name}
                   </h2>
-                  <p style={{ color: '#4b5563', fontSize: '0.875rem', minHeight: '2.5rem' }}>
-                    {project.description}
-                  </p>
+                </Link>
+                <p style={{ color: '#4b5563', fontSize: '0.875rem', minHeight: '2.5rem' }}>
+                  {project.description || 'Pas de description'}
+                </p>
 
-                  <div style={{ marginTop: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                      <span style={{ fontSize: '0.875rem', color: '#4b5563' }}>Progression</span>
-                      <span style={{ fontSize: '0.875rem', fontWeight: '600', color: '#4a90e2' }}>
-                        {project.completed}/{project.tasks}
-                      </span>
-                    </div>
-                    <progress
-                      className="progress"
-                      value={project.tasks > 0 ? (project.completed / project.tasks) * 100 : 0}
-                      max="100"
-                    />
-                  </div>
-
-                  <div className="card-actions" style={{ marginTop: '1rem', justifyContent: 'flex-end' }}>
-                    <span className="badge badge-primary">
-                      {project.tasks} tâches
+                <div style={{ marginTop: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '0.875rem', color: '#4b5563' }}>Progression</span>
+                    <span style={{ fontSize: '0.875rem', fontWeight: '600', color: '#4a90e2' }}>
+                      {project.completedCount || 0}/{project.taskCount || 0}
                     </span>
                   </div>
+                  <progress
+                    className="progress"
+                    value={(project.taskCount || 0) > 0 ? ((project.completedCount || 0) / (project.taskCount || 0)) * 100 : 0}
+                    max="100"
+                  />
+                </div>
+
+                <div className="card-actions" style={{ marginTop: '1rem', gap: '0.5rem' }}>
+                  <Link href={`/projects/${project.id}`} className="btn btn-primary" style={{ flex: 1 }}>
+                    Voir les tâches
+                  </Link>
+                  <button
+                    onClick={() => handleDeleteProject(project.id)}
+                    className="btn btn-error btn-sm"
+                  >
+                    Supprimer
+                  </button>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
 
-        {projects.length === 0 && (
+        {projects.length === 0 && !showForm && (
           <div style={{ textAlign: 'center', paddingTop: '3rem' }}>
             <p style={{ fontSize: '1.125rem', color: '#4b5563', marginBottom: '1rem' }}>
               Aucun projet pour le moment

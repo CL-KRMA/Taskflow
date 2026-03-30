@@ -2,25 +2,50 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/useAuth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [localError, setLocalError] = useState('');
+  const router = useRouter();
+  const { signIn, signInWithGoogle, error: authError } = useAuth();
 
-  const handleGoogleLogin = () => {
-    alert('Connexion avec Google - Redirection vers le tableau de bord');
-    window.location.href = '/dashboard';
-  };
-
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && password) {
-      alert(`Connexion réussie avec ${email}`);
-      window.location.href = '/dashboard';
-    } else {
-      alert('Veuillez remplir tous les champs');
+    setLocalError('');
+
+    if (!email || !password) {
+      setLocalError('Veuillez remplir tous les champs');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await signIn(email, password);
+      router.push('/dashboard');
+    } catch (err) {
+      setLocalError(err instanceof Error ? err.message : 'Erreur de connexion');
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const handleGoogleLogin = async () => {
+    setLocalError('');
+    setIsLoading(true);
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      setLocalError(err instanceof Error ? err.message : 'Erreur de connexion Google');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const displayError = localError || authError;
 
   return (
     <div style={{
@@ -42,6 +67,19 @@ export default function Login() {
           </h2>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {displayError && (
+              <div style={{
+                backgroundColor: '#fee2e2',
+                color: '#991b1b',
+                padding: '0.75rem',
+                borderRadius: '0.5rem',
+                fontSize: '0.875rem',
+                border: '1px solid #fca5a5'
+              }}>
+                {displayError}
+              </div>
+            )}
+
             <div className="form-control">
               <label className="label">Email</label>
               <input
@@ -50,6 +88,8 @@ export default function Login() {
                 className="input"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
+                required
               />
             </div>
 
@@ -61,6 +101,8 @@ export default function Login() {
                 className="input"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                required
               />
             </div>
 
@@ -68,8 +110,9 @@ export default function Login() {
               type="submit"
               className="btn btn-primary"
               style={{ width: '100%', marginTop: '0.5rem' }}
+              disabled={isLoading}
             >
-              Se connecter
+              {isLoading ? 'Connexion en cours...' : 'Se connecter'}
             </button>
           </form>
 
@@ -79,6 +122,7 @@ export default function Login() {
             onClick={handleGoogleLogin}
             className="btn btn-outline"
             style={{ width: '100%' }}
+            disabled={isLoading}
           >
             <svg
               className="w-5 h-5"
@@ -88,7 +132,7 @@ export default function Login() {
             >
               <path d="M10 0C4.477 0 0 4.477 0 10s4.477 10 10 10 10-4.477 10-10-4.477-10-10-10zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
             </svg>
-            Se connecter avec Google
+            {isLoading ? 'Connexion...' : 'Se connecter avec Google'}
           </button>
 
           <p style={{
@@ -98,8 +142,8 @@ export default function Login() {
             marginTop: '1rem'
           }}>
             Pas encore de compte?{' '}
-            <Link href="/" style={{ color: '#4a90e2', fontWeight: 'bold', textDecoration: 'none' }}>
-              Retour à l'accueil
+            <Link href="/register" style={{ color: '#4a90e2', fontWeight: 'bold', textDecoration: 'none' }}>
+              S'inscrire
             </Link>
           </p>
         </div>
