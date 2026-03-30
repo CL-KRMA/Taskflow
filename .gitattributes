@@ -1,0 +1,11 @@
+# Forcer GitHub Linguist à reconnaître TypeScript
+*.ts linguist-language=TypeScript
+*.tsx linguist-language=TypeScript
+
+# Ignorer les fichiers générés (build, dist)
+dist/* linguist-generated=true
+build/* linguist-generated=true
+.next/* linguist-generated=true
+
+# Ignorer les dépendances
+node_modules/* linguist-vendored=true
